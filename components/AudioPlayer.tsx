@@ -17,8 +17,13 @@ export default function AudioPlayer({ src, title }: Props) {
   const toggle = () => {
     const a = audioRef.current
     if (!a) return
-    if (playing) { a.pause(); setPlaying(false) }
-    else { a.play(); setPlaying(true) }
+    if (playing) {
+      a.pause()
+      setPlaying(false)
+    } else {
+      void a.play()
+      setPlaying(true)
+    }
   }
 
   const onTimeUpdate = () => {
@@ -47,7 +52,7 @@ export default function AudioPlayer({ src, title }: Props) {
   }
 
   return (
-    <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5 flex flex-col gap-3">
+    <div className="bg-blue-50 border border-blue-100 rounded-[var(--radius-lg)] p-5 flex flex-col gap-3 shadow-[var(--shadow-soft)] ring-1 ring-blue-200/20">
       {title && <p className="text-sm font-semibold text-blue-900 truncate">{title}</p>}
 
       <audio
@@ -59,25 +64,24 @@ export default function AudioPlayer({ src, title }: Props) {
       />
 
       <div className="flex items-center gap-4">
-        {/* Play/Pause */}
         <button
+          type="button"
           onClick={toggle}
-          className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors flex-shrink-0 shadow"
+          className="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors flex-shrink-0 shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           aria-label={playing ? 'Pause' : 'Play'}
         >
           {playing ? (
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <rect x="6" y="4" width="4" height="16" rx="1"/>
-              <rect x="14" y="4" width="4" height="16" rx="1"/>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <rect x="6" y="4" width="4" height="16" rx="1" />
+              <rect x="14" y="4" width="4" height="16" rx="1" />
             </svg>
           ) : (
-            <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z"/>
+            <svg className="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path d="M8 5v14l11-7z" />
             </svg>
           )}
         </button>
 
-        {/* Scrubber */}
         <div className="flex-1 flex flex-col gap-1">
           <input
             type="range"
@@ -86,6 +90,7 @@ export default function AudioPlayer({ src, title }: Props) {
             value={progress}
             onChange={seek}
             className="w-full accent-blue-600 h-1.5 cursor-pointer"
+            aria-label="Playback position"
           />
           <div className="flex justify-between text-xs text-blue-700 font-mono">
             <span>{fmt(currentTime)}</span>

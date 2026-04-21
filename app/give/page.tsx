@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import InnerPageHero from '@/components/layout/InnerPageHero'
+import SectionReveal from '@/components/motion/SectionReveal'
 import {
   CHURCH_ADDRESS_SINGLE_LINE,
   CHURCH_GIVING_MAIL_ADDRESS,
@@ -16,7 +18,7 @@ const GIVING_OPTIONS = [
   {
     icon: '💳',
     title: 'Online Giving',
-    body: `A safe way to support the mission and ministries of Harvest — one-time or recurring. You can also use the church’s established portal while this site’s payment integration is configured.`,
+    body: `A safe way to support the mission and ministries of Harvest — one-time or recurring. You can also use the church's established portal while this site's payment integration is configured.`,
     cta: 'Give Online',
     href: '#give-online',
     primary: true,
@@ -42,42 +44,48 @@ const GIVING_OPTIONS = [
 export default function GivePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-24 text-center">
-        <div className="max-w-3xl mx-auto px-4">
-          <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">Generosity</p>
-          <h1 className="text-5xl font-extrabold mb-4">Give to {CHURCH_NAME}</h1>
-          <p className="text-blue-200 text-lg leading-relaxed max-w-xl mx-auto">
-            Every gift makes a difference. Your generosity fuels ministry, serves our community, and reaches the world with the love of Jesus.
+      <InnerPageHero
+        kicker="Generosity"
+        title={`Give to ${CHURCH_NAME}`}
+        description={
+          <p>
+            Every gift makes a difference. Your generosity fuels ministry, serves our community, and reaches the world
+            with the love of Jesus.
           </p>
-        </div>
-      </section>
+        }
+      />
 
-      {/* Scripture */}
-      <section className="py-12 bg-amber-50 border-y border-amber-100">
+      <SectionReveal as="section" className="py-12 bg-amber-50 border-y border-amber-100">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <blockquote className="text-lg text-amber-800 font-medium italic leading-relaxed">
-            &ldquo;The point is this: whoever sows sparingly will also reap sparingly, and whoever sows bountifully will also reap bountifully. Each one must give as he has decided in his heart, not reluctantly or under compulsion, for God loves a cheerful giver.&rdquo;
+            &ldquo;The point is this: whoever sows sparingly will also reap sparingly, and whoever sows bountifully will
+            also reap bountifully. Each one must give as he has decided in his heart, not reluctantly or under
+            compulsion, for God loves a cheerful giver.&rdquo;
           </blockquote>
           <p className="text-amber-600 font-semibold mt-3 text-sm">— 2 Corinthians 9:6–8</p>
         </div>
-      </section>
+      </SectionReveal>
 
-      {/* Ways to Give */}
-      <section className="py-20 max-w-6xl mx-auto px-4">
+      <SectionReveal as="section" className="py-[var(--section-y-lg)] max-w-6xl mx-auto px-4" delay={0.04}>
         <div className="text-center mb-12">
           <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-3">Ways to Give</p>
-          <h2 className="text-4xl font-extrabold text-gray-900">Choose How to Give</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900">Choose How to Give</h2>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {GIVING_OPTIONS.map(opt => (
             <div
               key={opt.title}
-              className={`rounded-2xl p-8 border ${opt.primary ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-gray-200 shadow-sm'}`}
+              className={`rounded-[var(--radius-lg)] p-8 border transition-all duration-300 ${
+                opt.primary
+                  ? 'bg-blue-600 border-blue-600 text-white shadow-[var(--shadow-lift)] hover:shadow-[0_28px_60px_-28px_rgb(37_99_235/0.55)]'
+                  : 'bg-white border-gray-200/90 shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-lift)] hover:border-blue-200/60 hover:-translate-y-0.5'
+              }`}
             >
               <div className="text-4xl mb-4">{opt.icon}</div>
               <h3 className={`font-bold text-xl mb-3 ${opt.primary ? 'text-white' : 'text-gray-900'}`}>{opt.title}</h3>
-              <p className={`text-sm leading-relaxed mb-6 ${opt.primary ? 'text-blue-100' : 'text-gray-600'}`}>{opt.body}</p>
+              <p className={`text-sm leading-relaxed mb-6 ${opt.primary ? 'text-blue-100' : 'text-gray-600'}`}>
+                {opt.body}
+              </p>
               {opt.cta && opt.href && (
                 <a
                   href={opt.href}
@@ -93,29 +101,28 @@ export default function GivePage() {
             </div>
           ))}
         </div>
-      </section>
+      </SectionReveal>
 
-      <section id="text-give" className="py-16 bg-white border-y border-gray-100">
+      <SectionReveal as="section" id="text-give" className="py-16 bg-gray-50 border-y border-gray-100" delay={0.03}>
         <div className="max-w-xl mx-auto px-4 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Text to Give</h2>
+          <h2 className="text-2xl font-display font-semibold text-gray-900 mb-2">Text to Give</h2>
           <p className="text-gray-600 text-sm mb-6">
             Text your <strong>donation amount</strong> to the number below. Follow the prompts to complete your gift.
           </p>
           <a
             href={`sms:${CHURCH_TEXT_TO_GIVE_TEL}`}
-            className="inline-block text-3xl font-extrabold text-blue-700 tracking-wide hover:text-blue-900"
+            className="inline-block text-3xl font-extrabold text-blue-700 tracking-wide hover:text-blue-900 transition-colors"
           >
             {CHURCH_TEXT_TO_GIVE_DISPLAY}
           </a>
           <p className="text-xs text-gray-400 mt-4">Standard message and data rates may apply.</p>
         </div>
-      </section>
+      </SectionReveal>
 
-      {/* Online Giving Form Placeholder */}
-      <section id="give-online" className="py-16 bg-gray-50">
+      <SectionReveal as="section" id="give-online" className="py-16 bg-white" delay={0.04}>
         <div className="max-w-2xl mx-auto px-4">
-          <div className="bg-white rounded-3xl border border-gray-200 p-10 shadow-sm text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-3">Online Giving</h2>
+          <div className="bg-white rounded-[var(--radius-xl)] border border-gray-200/90 p-10 shadow-[var(--shadow-soft)] text-center transition-shadow duration-300 hover:shadow-[var(--shadow-lift)]">
+            <h2 className="text-2xl font-display font-semibold text-gray-900 mb-3">Online Giving</h2>
             <p className="text-gray-500 text-sm mb-4">
               Connect your preferred processor here when ready. Until then, you can give through the church&apos;s
               existing secure portal.
@@ -131,13 +138,17 @@ export default function GivePage() {
               </a>
             </p>
 
-            {/* Placeholder giving form */}
-            <div className="space-y-4 text-left">
+            <div className="space-y-4 text-left opacity-90">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Gift Amount</label>
                 <div className="grid grid-cols-4 gap-2 mb-2">
                   {['$25', '$50', '$100', '$250'].map(amt => (
-                    <button key={amt} className="border border-blue-200 text-blue-700 rounded-lg py-2 text-sm font-semibold hover:bg-blue-50 transition-colors">
+                    <button
+                      key={amt}
+                      type="button"
+                      disabled
+                      className="border border-blue-200/80 text-blue-700 rounded-[var(--radius-sm)] py-2 text-sm font-semibold bg-blue-50/50 cursor-not-allowed"
+                    >
                       {amt}
                     </button>
                   ))}
@@ -145,13 +156,17 @@ export default function GivePage() {
                 <input
                   type="number"
                   placeholder="Custom amount"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300"
+                  disabled
+                  className="w-full border border-gray-200 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm bg-gray-50 cursor-not-allowed"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Give Toward</label>
-                <select className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 bg-white">
+                <select
+                  disabled
+                  className="w-full border border-gray-200 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm bg-gray-50 cursor-not-allowed"
+                >
                   <option>General Fund</option>
                   <option>Missions</option>
                   <option>Building Fund</option>
@@ -164,31 +179,41 @@ export default function GivePage() {
                 <label className="block text-xs font-medium text-gray-600 mb-1">Frequency</label>
                 <div className="grid grid-cols-3 gap-2">
                   {['One-time', 'Monthly', 'Weekly'].map(f => (
-                    <button key={f} className="border border-gray-200 text-gray-700 rounded-lg py-2 text-sm font-medium hover:border-blue-400 hover:text-blue-700 transition-colors">
+                    <button
+                      key={f}
+                      type="button"
+                      disabled
+                      className="border border-gray-200 text-gray-500 rounded-[var(--radius-sm)] py-2 text-sm font-medium bg-gray-50 cursor-not-allowed"
+                    >
                       {f}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <button className="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors text-base mt-2">
-                Proceed to Secure Payment
+              <button
+                type="button"
+                disabled
+                className="w-full py-3.5 bg-gray-300 text-gray-500 font-bold rounded-[var(--radius-md)] text-base mt-2 cursor-not-allowed"
+              >
+                Coming soon — use link above
               </button>
             </div>
 
             <p className="text-xs text-gray-400 mt-6 flex items-center justify-center gap-1">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-              Secured by 256-bit encryption
+              <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" />
+              </svg>
+              Live payments will use industry-standard encryption when enabled.
             </p>
           </div>
         </div>
-      </section>
+      </SectionReveal>
 
-      {/* Impact */}
-      <section className="py-20 max-w-5xl mx-auto px-4">
+      <SectionReveal as="section" className="py-[var(--section-y-lg)] max-w-5xl mx-auto px-4" delay={0.05}>
         <div className="text-center mb-12">
           <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-3">Your Impact</p>
-          <h2 className="text-4xl font-extrabold text-gray-900">Where Your Gift Goes</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900">Where Your Gift Goes</h2>
         </div>
         <div className="grid sm:grid-cols-3 gap-6 text-center">
           {[
@@ -196,27 +221,34 @@ export default function GivePage() {
             { label: 'Church Operations', pct: '50%', color: 'bg-amber-400' },
             { label: 'Global Missions', pct: '20%', color: 'bg-green-500' },
           ].map(item => (
-            <div key={item.label} className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-              <div className={`w-16 h-16 rounded-full ${item.color} mx-auto mb-4 flex items-center justify-center text-white font-extrabold text-xl`}>
+            <div
+              key={item.label}
+              className="bg-gray-50 rounded-[var(--radius-lg)] p-6 border border-gray-200/90 shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)]"
+            >
+              <div
+                className={`w-16 h-16 rounded-full ${item.color} mx-auto mb-4 flex items-center justify-center text-white font-extrabold text-xl shadow-md`}
+              >
                 {item.pct}
               </div>
               <p className="font-semibold text-gray-900">{item.label}</p>
             </div>
           ))}
         </div>
-      </section>
+      </SectionReveal>
 
-      {/* Tax info */}
-      <section className="bg-gray-50 py-10">
+      <section className="bg-gray-50 py-10 border-t border-gray-100">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <p className="text-sm text-gray-500">
-            {CHURCH_NAME} is a registered 501(c)(3) nonprofit organization. All donations are tax-deductible to the extent permitted by law.
-            Questions? Call{' '}
+            {CHURCH_NAME} is a registered 501(c)(3) nonprofit organization. All donations are tax-deductible to the
+            extent permitted by law. Questions? Call{' '}
             <a href={`tel:${CHURCH_PHONE_TEL}`} className="text-blue-600 hover:underline">
               {CHURCH_PHONE_DISPLAY}
-            </a>
-            {' '}or reach out through the contact form on our{' '}
-            <Link href="/about" className="text-blue-600 hover:underline">About</Link> page.
+            </a>{' '}
+            or reach out through the contact form on our{' '}
+            <Link href="/about" className="text-blue-600 hover:underline">
+              About
+            </Link>{' '}
+            page.
           </p>
         </div>
       </section>

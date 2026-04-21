@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import InnerPageHero from '@/components/layout/InnerPageHero'
+import SectionReveal from '@/components/motion/SectionReveal'
 import { CHURCH_NAME } from '@/lib/church-info'
 import {
   ENGAGE_THE_WORLD_INTRO,
@@ -32,23 +34,23 @@ const nav = [
 export default function MinistriesPage() {
   return (
     <div className="min-h-screen bg-white">
-      <section className="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-20 text-center">
-        <div className="max-w-3xl mx-auto px-4">
-          <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">Life together</p>
-          <h1 className="text-5xl font-extrabold mb-4">Ministries</h1>
-          <p className="text-blue-200 text-lg leading-relaxed">
+      <InnerPageHero
+        kicker="Life together"
+        title="Ministries"
+        description={
+          <p>
             How {CHURCH_NAME} equips every age to trust Jesus, grow in community, and serve others.
           </p>
-        </div>
-      </section>
+        }
+      />
 
-      <nav className="border-b border-gray-200 bg-gray-50 sticky top-16 z-40">
+      <nav className="border-b border-gray-200/80 bg-white/90 backdrop-blur-md sticky top-16 z-40 shadow-[var(--shadow-soft)]">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap gap-2 justify-center text-sm">
           {nav.map(([href, label]) => (
             <a
               key={href}
               href={href}
-              className="px-3 py-1.5 rounded-full bg-white border border-gray-200 text-gray-700 hover:border-blue-300 hover:text-blue-800 transition-colors"
+              className="px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200/90 text-gray-700 hover:border-blue-300 hover:text-blue-800 hover:bg-blue-50/80 transition-colors"
             >
               {label}
             </a>
@@ -56,9 +58,9 @@ export default function MinistriesPage() {
         </div>
       </nav>
 
-      <section id="harvest-kids" className="py-20 max-w-4xl mx-auto px-4 scroll-mt-28">
+      <SectionReveal as="section" id="harvest-kids" className="py-[var(--section-y-lg)] max-w-4xl mx-auto px-4 scroll-mt-28">
         <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">{HARVEST_KIDS_TITLE}</p>
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-2">{HARVEST_KIDS_TAGLINE}</h2>
+        <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900 mb-2">{HARVEST_KIDS_TAGLINE}</h2>
         <div className="space-y-4 text-gray-600 leading-relaxed mt-6">
           {HARVEST_KIDS_BODY.map((p, i) => (
             <p key={i}>{p}</p>
@@ -70,12 +72,12 @@ export default function MinistriesPage() {
             <p key={i}>{p}</p>
           ))}
         </div>
-      </section>
+      </SectionReveal>
 
-      <section id="harvest-students" className="bg-gray-50 py-20 scroll-mt-28">
+      <SectionReveal as="section" id="harvest-students" className="bg-gray-50 py-[var(--section-y-lg)] scroll-mt-28" delay={0.03}>
         <div className="max-w-4xl mx-auto px-4">
           <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">{HARVEST_STUDENTS_TITLE}</p>
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-2">{HARVEST_STUDENTS_TAGLINE}</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900 mb-2">{HARVEST_STUDENTS_TAGLINE}</h2>
           <p className="text-gray-600 leading-relaxed mt-6">{HARVEST_STUDENTS_INTRO}</p>
           <div className="space-y-10 mt-10">
             {HARVEST_STUDENTS_SECTIONS.map(s => (
@@ -87,29 +89,35 @@ export default function MinistriesPage() {
           </div>
           <p className="text-gray-600 text-sm leading-relaxed mt-8 border-l-4 border-amber-400 pl-4">{HARVEST_STUDENTS_NOTE}</p>
         </div>
-      </section>
+      </SectionReveal>
 
-      <section id="fellowship-groups" className="py-20 max-w-4xl mx-auto px-4 scroll-mt-28">
+      <SectionReveal as="section" id="fellowship-groups" className="py-[var(--section-y-lg)] max-w-4xl mx-auto px-4 scroll-mt-28" delay={0.04}>
         <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">Community</p>
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-8">Fellowship Groups</h2>
+        <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900 mb-8">Fellowship Groups</h2>
         <div className="space-y-8">
           {FELLOWSHIP_GROUPS.map(g => (
-            <div key={g.title} className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+            <div
+              key={g.title}
+              className="bg-blue-50 rounded-[var(--radius-lg)] p-6 border border-blue-100 shadow-[var(--shadow-soft)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)]"
+            >
               <h3 className="font-bold text-gray-900 text-lg mb-2">{g.title}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">{g.body}</p>
             </div>
           ))}
         </div>
-      </section>
+      </SectionReveal>
 
-      <section id="serve-the-church" className="bg-gray-50 py-20 scroll-mt-28">
+      <SectionReveal as="section" id="serve-the-church" className="bg-gray-50 py-[var(--section-y-lg)] scroll-mt-28" delay={0.03}>
         <div className="max-w-6xl mx-auto px-4">
           <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">Volunteer</p>
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Serve the Church</h2>
+          <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900 mb-4">Serve the Church</h2>
           <p className="text-gray-600 leading-relaxed max-w-3xl mb-10">{SERVE_THE_CHURCH_INTRO}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {SERVE_ROLES.map(r => (
-              <div key={r.title} className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+              <div
+                key={r.title}
+                className="bg-white rounded-[var(--radius-md)] p-5 border border-gray-200/90 shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)] hover:border-blue-200/50 hover:-translate-y-0.5"
+              >
                 <h3 className="font-bold text-gray-900 capitalize mb-2">{r.title}</h3>
                 <p className="text-gray-600 text-xs leading-relaxed">{r.description}</p>
               </div>
@@ -121,11 +129,11 @@ export default function MinistriesPage() {
             </Link>
           </p>
         </div>
-      </section>
+      </SectionReveal>
 
-      <section id="engage-the-world" className="py-20 max-w-4xl mx-auto px-4 scroll-mt-28">
+      <SectionReveal as="section" id="engage-the-world" className="py-[var(--section-y-lg)] max-w-4xl mx-auto px-4 scroll-mt-28" delay={0.04}>
         <p className="text-amber-500 font-semibold text-sm uppercase tracking-wider mb-2">Outreach</p>
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-2">{ENGAGE_THE_WORLD_TITLE}</h2>
+        <h2 className="text-3xl md:text-4xl font-display font-semibold text-gray-900 mb-2">{ENGAGE_THE_WORLD_TITLE}</h2>
         <div className="space-y-4 text-gray-600 leading-relaxed mt-6">
           {ENGAGE_THE_WORLD_INTRO.map((p, i) => (
             <p key={i}>{p}</p>
@@ -149,7 +157,7 @@ export default function MinistriesPage() {
             </div>
           ))}
         </div>
-      </section>
+      </SectionReveal>
     </div>
   )
 }

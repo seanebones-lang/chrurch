@@ -12,9 +12,7 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
 
-  const endpoint = formId
-    ? `https://formspree.io/f/${formId}`
-    : '/api/contact'
+  const endpoint = formId ? `https://formspree.io/f/${formId}` : '/api/contact'
 
   const update = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm(prev => ({ ...prev, [field]: e.target.value }))
@@ -28,25 +26,40 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(form),
       })
-      if (res.ok) { setStatus('sent'); setForm({ name: '', email: '', phone: '', message: '' }) }
-      else setStatus('error')
-    } catch { setStatus('error') }
+      if (res.ok) {
+        setStatus('sent')
+        setForm({ name: '', email: '', phone: '', message: '' })
+      } else setStatus('error')
+    } catch {
+      setStatus('error')
+    }
   }
+
+  const fieldClass =
+    'w-full border border-gray-200 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition-shadow'
 
   if (status === 'sent') {
     return (
-      <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center">
-        <div className="text-4xl mb-3">✅</div>
-        <h3 className="text-lg font-semibold text-green-800 mb-1">Message Received!</h3>
-        <p className="text-green-700 text-sm">We'll be in touch soon. God bless!</p>
-        <button onClick={() => setStatus('idle')} className="mt-4 text-sm underline text-green-700">Send another</button>
+      <div className="bg-green-50 border border-green-200 rounded-[var(--radius-xl)] p-8 text-center shadow-[var(--shadow-soft)]">
+        <div className="text-4xl mb-3" aria-hidden>
+          ✅
+        </div>
+        <h3 className="text-lg font-semibold text-green-800 mb-1 font-display">Message Received!</h3>
+        <p className="text-green-700 text-sm">We&apos;ll be in touch soon. God bless!</p>
+        <button
+          type="button"
+          onClick={() => setStatus('idle')}
+          className="mt-4 text-sm underline text-green-700 hover:text-green-900"
+        >
+          Send another
+        </button>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
-      {title && <h2 className="text-2xl font-bold text-gray-900 mb-1">{title}</h2>}
+    <div className="bg-white rounded-[var(--radius-xl)] border border-gray-200/90 p-8 shadow-[var(--shadow-soft)] transition-shadow duration-300 hover:shadow-[var(--shadow-lift)]">
+      {title && <h2 className="text-2xl font-display font-semibold text-gray-900 mb-1">{title}</h2>}
       {subtitle && <p className="text-gray-500 text-sm mb-6">{subtitle}</p>}
 
       <form onSubmit={submit} className="space-y-4">
@@ -58,7 +71,7 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
               value={form.name}
               onChange={update('name')}
               placeholder="Your name"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+              className={fieldClass}
             />
           </div>
           <div>
@@ -69,7 +82,7 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
               value={form.email}
               onChange={update('email')}
               placeholder="you@email.com"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+              className={fieldClass}
             />
           </div>
         </div>
@@ -81,7 +94,7 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
             value={form.phone}
             onChange={update('phone')}
             placeholder="(972) 920-6701"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400"
+            className={fieldClass}
           />
         </div>
 
@@ -93,7 +106,7 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
             value={form.message}
             onChange={update('message')}
             placeholder="How can we help?"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-400 resize-none"
+            className={`${fieldClass} resize-none`}
           />
         </div>
 
@@ -104,7 +117,7 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
         <button
           type="submit"
           disabled={status === 'sending'}
-          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-60 transition-colors"
+          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-[var(--radius-md)] hover:bg-blue-700 disabled:opacity-60 transition-colors shadow-md"
         >
           {status === 'sending' ? 'Sending...' : 'Send Message'}
         </button>

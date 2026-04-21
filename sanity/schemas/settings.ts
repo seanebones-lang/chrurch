@@ -12,6 +12,13 @@ export default defineType({
       initialValue: 'Harvest Fellowship Baptist Church',
     }),
     defineField({ name: 'tagline', title: 'Tagline', type: 'string' }),
+    defineField({
+      name: 'welcomeSectionImage',
+      title: 'Home “Welcome” section image',
+      description: 'Photo beside “First Time Here?” on the homepage. Optional.',
+      type: 'image',
+      options: { hotspot: true },
+    }),
     defineField({ name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } }),
     defineField({
       name: 'serviceTimes',

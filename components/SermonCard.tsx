@@ -25,9 +25,12 @@ export default function SermonCard({ sermon }: Props) {
   })
 
   return (
-    <Link href={`/sermons/${sermon.slug.current}`} className="group block bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+    <Link
+      href={`/sermons/${sermon.slug.current}`}
+      className="group card-sheen block bg-white rounded-[var(--radius-lg)] overflow-hidden border border-gray-200/90 shadow-[var(--shadow-soft)] transition-all duration-300 hover:shadow-[var(--shadow-lift)] hover:border-blue-200/70 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+    >
       {/* Thumbnail */}
-      <div className="relative h-44 bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
+      <div className="relative h-44 bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden ring-1 ring-inset ring-black/5">
         {thumb ? (
           <Image src={thumb} alt={sermon.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (

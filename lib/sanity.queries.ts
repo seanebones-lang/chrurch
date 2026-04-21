@@ -48,7 +48,7 @@ export const PASTORS_QUERY = groq`
 
 export const SETTINGS_QUERY = groq`
   *[_type == "settings"][0] {
-    churchName, tagline, logo, serviceTimes,
+    churchName, tagline, welcomeSectionImage, logo, serviceTimes,
     address, phone, email, socialLinks, giveLink
   }
 `
