@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { CHURCH_NAME_SHORT, CHURCH_PHONE_DISPLAY } from '@/lib/church-info'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -10,7 +11,10 @@ interface Message {
 export default function ChatBot() {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'assistant', content: 'Hi! I\'m the Harvest Church assistant. Ask me about service times, sermons, events, or anything else. How can I help?' },
+    {
+      role: 'assistant',
+      content: `Hi! I'm the ${CHURCH_NAME_SHORT} assistant. Ask me about service times, sermons, events, or anything else. How can I help?`,
+    },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -37,7 +41,13 @@ export default function ChatBot() {
       const data = await res.json()
       setMessages(prev => [...prev, { role: 'assistant', content: data.message }])
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I\'m having trouble connecting right now. Please call us at (555) 000-0000.' }])
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: `Sorry, I'm having trouble connecting right now. Please call us at ${CHURCH_PHONE_DISPLAY}.`,
+        },
+      ])
     } finally {
       setLoading(false)
     }
@@ -69,7 +79,7 @@ export default function ChatBot() {
           <div className="bg-blue-600 text-white px-4 py-3 flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-blue-900 font-bold text-sm">H</div>
             <div>
-              <p className="font-semibold text-sm">Harvest Church</p>
+              <p className="font-semibold text-sm">{CHURCH_NAME_SHORT}</p>
               <p className="text-xs text-blue-100">Ask me anything</p>
             </div>
           </div>

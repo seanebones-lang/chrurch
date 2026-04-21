@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { getEvents } from '@/lib/sanity.queries'
 import { urlFor } from '@/lib/sanity.client'
+import { CHURCH_NAME, CHURCH_PHONE_TEL, CHURCH_PHONE_DISPLAY } from '@/lib/church-info'
 
 export const metadata: Metadata = { title: 'Events' }
 export const revalidate = 60
@@ -20,7 +21,7 @@ export default async function EventsPage() {
           <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">Community</p>
           <h1 className="text-5xl font-extrabold mb-4">Events</h1>
           <p className="text-blue-200 text-lg">
-            Stay connected. Something is always happening at Harvest Church.
+            Stay connected. Something is always happening at {CHURCH_NAME}.
           </p>
         </div>
       </section>
@@ -116,8 +117,11 @@ export default async function EventsPage() {
         <div className="max-w-2xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-3">Have a question about an event?</h2>
           <p className="text-gray-500 mb-6">We'd love to hear from you.</p>
-          <Link href="mailto:info@harvestchurch.org" className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors">
-            Contact Us
+          <Link
+            href={`tel:${CHURCH_PHONE_TEL}`}
+            className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Call {CHURCH_PHONE_DISPLAY}
           </Link>
         </div>
       </section>

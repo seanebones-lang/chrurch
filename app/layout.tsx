@@ -3,15 +3,17 @@ import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import ChatBot from '@/components/ChatBot'
+import { CHURCH_NAME } from '@/lib/church-info'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Harvest Church',
-    default: 'Harvest Church — Rooted in Faith, Growing in Love',
+    template: `%s | ${CHURCH_NAME}`,
+    default: `${CHURCH_NAME} — Trust and Obey Jesus`,
   },
-  description: 'Welcome to Harvest Church. Join us for Sunday worship, sermons, events, and community.',
+  description:
+    'Multigenerational church in DeSoto, TX — Sunday worship at 10:00 AM, Tuesday Bible study at 7:00 PM. Leading people to trust and obey Jesus.',
   openGraph: {
-    siteName: 'Harvest Church',
+    siteName: CHURCH_NAME,
     type: 'website',
   },
 }

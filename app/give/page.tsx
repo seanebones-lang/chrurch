@@ -1,5 +1,14 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import {
+  CHURCH_ADDRESS_SINGLE_LINE,
+  CHURCH_GIVING_MAIL_ADDRESS,
+  CHURCH_NAME,
+  CHURCH_PHONE_DISPLAY,
+  CHURCH_PHONE_TEL,
+  CHURCH_TEXT_TO_GIVE_DISPLAY,
+  CHURCH_TEXT_TO_GIVE_TEL,
+} from '@/lib/church-info'
 
 export const metadata: Metadata = { title: 'Give' }
 
@@ -7,7 +16,7 @@ const GIVING_OPTIONS = [
   {
     icon: '💳',
     title: 'Online Giving',
-    body: 'Give securely online via credit card, debit card, or bank transfer. Set up recurring giving in minutes.',
+    body: `A safe way to support the mission and ministries of Harvest — one-time or recurring. You can also use the church’s established portal while this site’s payment integration is configured.`,
     cta: 'Give Online',
     href: '#give-online',
     primary: true,
@@ -15,7 +24,7 @@ const GIVING_OPTIONS = [
   {
     icon: '📱',
     title: 'Text to Give',
-    body: 'Text GIVE to (555) 000-0000. Follow the prompts to give quickly and securely from your phone.',
+    body: `Text your donation amount to ${CHURCH_TEXT_TO_GIVE_DISPLAY} and follow the prompts (same flow as harvestfbc.org).`,
     cta: 'Learn More',
     href: '#text-give',
     primary: false,
@@ -23,7 +32,7 @@ const GIVING_OPTIONS = [
   {
     icon: '✉️',
     title: 'Mail a Check',
-    body: 'Make checks payable to Harvest Church and mail to: 123 Main Street, Your City, ST 00000.',
+    body: `Make checks payable to ${CHURCH_NAME}. For donation credit and tax purposes, include your name and address. Mail to: ${CHURCH_GIVING_MAIL_ADDRESS}. You may also drop mail at ${CHURCH_ADDRESS_SINGLE_LINE}.`,
     cta: null,
     href: null,
     primary: false,
@@ -37,7 +46,7 @@ export default function GivePage() {
       <section className="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-24 text-center">
         <div className="max-w-3xl mx-auto px-4">
           <p className="text-amber-400 font-semibold text-sm uppercase tracking-widest mb-3">Generosity</p>
-          <h1 className="text-5xl font-extrabold mb-4">Give to Harvest Church</h1>
+          <h1 className="text-5xl font-extrabold mb-4">Give to {CHURCH_NAME}</h1>
           <p className="text-blue-200 text-lg leading-relaxed max-w-xl mx-auto">
             Every gift makes a difference. Your generosity fuels ministry, serves our community, and reaches the world with the love of Jesus.
           </p>
@@ -47,10 +56,10 @@ export default function GivePage() {
       {/* Scripture */}
       <section className="py-12 bg-amber-50 border-y border-amber-100">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <blockquote className="text-xl text-amber-800 font-medium italic leading-relaxed">
-            "Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver."
+          <blockquote className="text-lg text-amber-800 font-medium italic leading-relaxed">
+            &ldquo;The point is this: whoever sows sparingly will also reap sparingly, and whoever sows bountifully will also reap bountifully. Each one must give as he has decided in his heart, not reluctantly or under compulsion, for God loves a cheerful giver.&rdquo;
           </blockquote>
-          <p className="text-amber-600 font-semibold mt-3 text-sm">— 2 Corinthians 9:7</p>
+          <p className="text-amber-600 font-semibold mt-3 text-sm">— 2 Corinthians 9:6–8</p>
         </div>
       </section>
 
@@ -86,13 +95,40 @@ export default function GivePage() {
         </div>
       </section>
 
+      <section id="text-give" className="py-16 bg-white border-y border-gray-100">
+        <div className="max-w-xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Text to Give</h2>
+          <p className="text-gray-600 text-sm mb-6">
+            Text your <strong>donation amount</strong> to the number below. Follow the prompts to complete your gift.
+          </p>
+          <a
+            href={`sms:${CHURCH_TEXT_TO_GIVE_TEL}`}
+            className="inline-block text-3xl font-extrabold text-blue-700 tracking-wide hover:text-blue-900"
+          >
+            {CHURCH_TEXT_TO_GIVE_DISPLAY}
+          </a>
+          <p className="text-xs text-gray-400 mt-4">Standard message and data rates may apply.</p>
+        </div>
+      </section>
+
       {/* Online Giving Form Placeholder */}
       <section id="give-online" className="py-16 bg-gray-50">
         <div className="max-w-2xl mx-auto px-4">
           <div className="bg-white rounded-3xl border border-gray-200 p-10 shadow-sm text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-3">Online Giving</h2>
-            <p className="text-gray-500 text-sm mb-8">
-              Secure, encrypted giving powered by your preferred platform. Connect Stripe or a giving platform in settings.
+            <p className="text-gray-500 text-sm mb-4">
+              Connect your preferred processor here when ready. Until then, you can give through the church&apos;s
+              existing secure portal.
+            </p>
+            <p className="mb-8">
+              <a
+                href="https://harvestfbc.org/give/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 font-semibold text-sm hover:underline"
+              >
+                Open giving on harvestfbc.org ↗
+              </a>
             </p>
 
             {/* Placeholder giving form */}
@@ -174,8 +210,13 @@ export default function GivePage() {
       <section className="bg-gray-50 py-10">
         <div className="max-w-2xl mx-auto px-4 text-center">
           <p className="text-sm text-gray-500">
-            Harvest Church is a registered 501(c)(3) nonprofit organization. All donations are tax-deductible to the extent permitted by law.
-            Questions? Email <a href="mailto:giving@harvestchurch.org" className="text-blue-600 hover:underline">giving@harvestchurch.org</a>
+            {CHURCH_NAME} is a registered 501(c)(3) nonprofit organization. All donations are tax-deductible to the extent permitted by law.
+            Questions? Call{' '}
+            <a href={`tel:${CHURCH_PHONE_TEL}`} className="text-blue-600 hover:underline">
+              {CHURCH_PHONE_DISPLAY}
+            </a>
+            {' '}or reach out through the contact form on our{' '}
+            <Link href="/about" className="text-blue-600 hover:underline">About</Link> page.
           </p>
         </div>
       </section>

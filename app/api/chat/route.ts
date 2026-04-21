@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
+import {
+  CHURCH_ADDRESS_SINGLE_LINE,
+  CHURCH_NAME,
+  CHURCH_PHONE_DISPLAY,
+  CHURCH_SERVICE_TIMES_SUMMARY,
+} from '@/lib/church-info'
 
-const SYSTEM_PROMPT = `You are a helpful assistant for Harvest Church. You help visitors and members with questions about:
-- Service times (Sunday 9AM & 11AM, Wednesday 7PM Bible Study)
-- Location (123 Main Street, Your City, ST 00000)
+const SYSTEM_PROMPT = `You are a helpful assistant for ${CHURCH_NAME}. You help visitors and members with questions about:
+- Service times (${CHURCH_SERVICE_TIMES_SUMMARY})
+- Location (${CHURCH_ADDRESS_SINGLE_LINE})
 - Events and programs
 - How to get involved
 - What to expect as a first-time visitor
-- Kids ministry (available during all Sunday services)
+- Kids ministry (when offered)
 - Giving and tithing
 - Sermons and messages
+- Ministries (Kids, Students, Fellowship Groups, serving, outreach — see /ministries)
 
-Be warm, welcoming, concise, and encouraging. If you don't know the answer, invite them to call (555) 000-0000 or email info@harvestchurch.org. Never discuss politics or divisive topics. Keep responses under 150 words.`
+Be warm, welcoming, concise, and encouraging. If you don't know the answer, invite them to call ${CHURCH_PHONE_DISPLAY} or use the contact form on the About page of this website. Never discuss politics or divisive topics. Keep responses under 150 words.`
 
 export async function POST(req: NextRequest) {
   try {
@@ -19,7 +26,7 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.XAI_API_KEY
     if (!apiKey) {
       return NextResponse.json(
-        { message: "Hi! I'm not fully set up yet. Please call us at (555) 000-0000 for assistance." },
+        { message: `Hi! I'm not fully set up yet. Please call us at ${CHURCH_PHONE_DISPLAY} for assistance.` },
         { status: 200 }
       )
     }
@@ -43,12 +50,16 @@ export async function POST(req: NextRequest) {
     if (!res.ok) throw new Error('xAI API error')
 
     const data = await res.json()
-    const message = data.choices?.[0]?.message?.content ?? "I'm not sure about that. Please call us at (555) 000-0000!"
+    const message =
+      data.choices?.[0]?.message?.content ??
+      `I'm not sure about that. Please call us at ${CHURCH_PHONE_DISPLAY}!`
 
     return NextResponse.json({ message })
   } catch {
     return NextResponse.json(
-      { message: "Sorry, I'm having trouble right now. Please call (555) 000-0000 or email info@harvestchurch.org." },
+      {
+        message: `Sorry, I'm having trouble right now. Please call ${CHURCH_PHONE_DISPLAY} or use the contact form on our About page.`,
+      },
       { status: 200 }
     )
   }

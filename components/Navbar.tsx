@@ -2,10 +2,12 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { CHURCH_NAME, CHURCH_NAME_SHORT } from '@/lib/church-info'
 
 const links = [
   { href: '/sermons', label: 'Sermons' },
   { href: '/events', label: 'Events' },
+  { href: '/ministries', label: 'Ministries' },
   { href: '/about', label: 'About' },
   { href: '/im-new', label: "I'm New" },
   { href: '/give', label: 'Give' },
@@ -18,9 +20,13 @@ export default function Navbar() {
     <nav className="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight text-blue-700">
+        <Link
+          href="/"
+          title={CHURCH_NAME}
+          className="flex items-center gap-2 font-bold text-xl tracking-tight text-blue-700"
+        >
           <span className="text-amber-500">✦</span>
-          <span>Harvest Church</span>
+          <span>{CHURCH_NAME_SHORT}</span>
         </Link>
 
         {/* Desktop nav */}

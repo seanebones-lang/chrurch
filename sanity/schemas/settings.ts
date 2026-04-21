@@ -5,7 +5,12 @@ export default defineType({
   title: 'Site Settings',
   type: 'document',
   fields: [
-    defineField({ name: 'churchName', title: 'Church Name', type: 'string', initialValue: 'Harvest Church' }),
+    defineField({
+      name: 'churchName',
+      title: 'Church Name',
+      type: 'string',
+      initialValue: 'Harvest Fellowship Baptist Church',
+    }),
     defineField({ name: 'tagline', title: 'Tagline', type: 'string' }),
     defineField({ name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } }),
     defineField({

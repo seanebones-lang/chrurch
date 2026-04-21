@@ -3,6 +3,13 @@ import Image from 'next/image'
 import { getFeaturedSermon, getEvents, getSettings } from '@/lib/sanity.queries'
 import { urlFor } from '@/lib/sanity.client'
 import SermonCard from '@/components/SermonCard'
+import {
+  CHURCH_ADDRESS_SINGLE_LINE,
+  CHURCH_NAME_SHORT,
+  CHURCH_TAGLINE,
+  DEFAULT_SERVICE_TIMES,
+} from '@/lib/church-info'
+import { BIBLE_STUDY_SERIES_ALERT, SERMON_SERIES_ALERT } from '@/lib/church-content'
 
 export const revalidate = 60
 
@@ -25,14 +32,14 @@ export default async function HomePage() {
         <div className="relative max-w-6xl mx-auto px-4 py-24 text-white">
           <div className="max-w-2xl animate-fade-up">
             <p className="text-amber-400 font-semibold tracking-widest text-sm uppercase mb-4">
-              Welcome to Harvest Church
+              Welcome to {CHURCH_NAME_SHORT}
             </p>
             <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
               Where Faith<br />
               <span className="text-amber-400">Comes Alive</span>
             </h1>
             <p className="text-xl text-blue-100 mb-8 leading-relaxed max-w-lg">
-              {settings?.tagline || 'Rooted in faith. Growing in love. Reaching the world. Join us this Sunday — you belong here.'}
+              {settings?.tagline || `${CHURCH_TAGLINE} Please join us for worship this Sunday.`}
             </p>
             <div className="flex flex-wrap gap-4">
               <Link href="/im-new" className="px-8 py-4 bg-amber-400 text-amber-900 font-bold rounded-full hover:bg-amber-300 transition-colors shadow-lg">
@@ -53,16 +60,25 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="bg-amber-50 border-y border-amber-100 py-6 px-4">
+        <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-4 text-sm text-amber-950">
+          <p className="text-center md:text-left leading-snug">
+            <span className="font-bold text-amber-800">Sunday — </span>
+            {SERMON_SERIES_ALERT}
+          </p>
+          <p className="text-center md:text-right leading-snug">
+            <span className="font-bold text-amber-800">Tuesday — </span>
+            {BIBLE_STUDY_SERIES_ALERT}
+          </p>
+        </div>
+      </section>
+
       {/* ── Service Times ─────────────────────────────────────────── */}
       <section className="py-14 bg-white">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-center text-xs uppercase tracking-widest font-semibold text-gray-400 mb-8">Join Us This Week</h2>
           <div className="grid sm:grid-cols-3 gap-6 text-center">
-            {(settings?.serviceTimes ?? [
-              { name: 'Sunday Morning', day: 'Sunday', time: '9:00 AM' },
-              { name: 'Sunday Celebration', day: 'Sunday', time: '11:00 AM' },
-              { name: 'Wednesday Bible Study', day: 'Wednesday', time: '7:00 PM' },
-            ]).map((s: { name: string; day: string; time: string }, i: number) => (
+            {(settings?.serviceTimes ?? DEFAULT_SERVICE_TIMES).map((s: { name: string; day: string; time: string }, i: number) => (
               <div key={i} className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
                 <p className="text-amber-500 font-semibold text-sm mb-1">{s.day}</p>
                 <p className="text-2xl font-extrabold text-blue-900">{s.time}</p>
@@ -71,7 +87,7 @@ export default async function HomePage() {
             ))}
           </div>
           <p className="text-center text-gray-500 text-sm mt-6">
-            {settings?.address || '123 Main Street, Your City, ST 00000'}
+            {settings?.address || CHURCH_ADDRESS_SINGLE_LINE}
           </p>
         </div>
       </section>
