@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScro
 import { CHURCH_NAME, CHURCH_NAME_SHORT } from '@/lib/church-info'
 
 const links = [
+  { href: '/', label: 'Home' },
   { href: '/sermons', label: 'Sermons' },
   { href: '/events', label: 'Events' },
   { href: '/ministries', label: 'Ministries' },

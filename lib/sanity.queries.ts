@@ -53,6 +53,39 @@ export const SETTINGS_QUERY = groq`
   }
 `
 
+/** Recent sermons for chat context (no heavy fields). */
+export const CHAT_SERMONS_RECENT_QUERY = groq`
+  *[_type == "sermon" && defined(slug.current)] | order(date desc) [0...4] {
+    _id, title, "slug": slug.current, date, speaker, series, scripture, description
+  }
+`
+
+/** Sermon search for chat (Sanity `match` with glob). */
+export const CHAT_SERMONS_SEARCH_QUERY = groq`
+  *[_type == "sermon" && defined(slug.current) && (
+    title match $pat || coalesce(description, "") match $pat ||
+    coalesce(scripture, "") match $pat || coalesce(speaker, "") match $pat ||
+    coalesce(series, "") match $pat
+  )] | order(date desc) [0...6] {
+    _id, title, "slug": slug.current, date, speaker, series, scripture, description
+  }
+`
+
+/** CMS pages (ministry-style content) for chat. */
+export const CHAT_PAGES_SEARCH_QUERY = groq`
+  *[_type == "page" && defined(slug.current) && (
+    title match $pat || coalesce(seoTitle, "") match $pat || coalesce(seoDescription, "") match $pat
+  )] [0...4] {
+    _id, title, "slug": slug.current, seoTitle, seoDescription
+  }
+`
+
+export const SERMONS_FOR_INGEST_QUERY = groq`
+  *[_type == "sermon" && defined(slug.current)] {
+    _id, title, "slug": slug.current, date, speaker, series, scripture, description, transcript
+  }
+`
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 export async function getSermons() {
@@ -77,4 +110,20 @@ export async function getPastors() {
 
 export async function getSettings() {
   return client.fetch(SETTINGS_QUERY)
+}
+
+export async function getChatSermonsRecent() {
+  return client.fetch(CHAT_SERMONS_RECENT_QUERY)
+}
+
+export async function getChatSermonsSearch(pat: string) {
+  return client.fetch(CHAT_SERMONS_SEARCH_QUERY, { pat })
+}
+
+export async function getChatPagesSearch(pat: string) {
+  return client.fetch(CHAT_PAGES_SEARCH_QUERY, { pat })
+}
+
+export async function getSermonsForIngest() {
+  return client.fetch(SERMONS_FOR_INGEST_QUERY)
 }
