@@ -29,10 +29,12 @@ export default function ChatBot() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [pdfLoading, setPdfLoading] = useState(false)
+  const [muted, setMuted] = useState(false)
   const [ttsLoadingIndex, setTtsLoadingIndex] = useState<number | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const audioUrlRef = useRef<string | null>(null)
+  const autoPlayedAssistantRef = useRef<Set<number>>(new Set())
   const reduceMotion = useReducedMotion()
 
   useEffect(() => {
@@ -102,6 +104,18 @@ export default function ChatBot() {
     },
     [stopSpeech],
   )
+
+  /** Read each new assistant reply aloud by default (skip welcome at index 0). */
+  useEffect(() => {
+    if (!open || muted || loading || reduceMotion) return
+    const lastIdx = messages.length - 1
+    if (lastIdx <= 0) return
+    const last = messages[lastIdx]
+    if (last.role !== 'assistant') return
+    if (autoPlayedAssistantRef.current.has(lastIdx)) return
+    autoPlayedAssistantRef.current.add(lastIdx)
+    void playTts(lastIdx, last.content)
+  }, [messages, loading, muted, open, playTts, reduceMotion])
 
   const downloadChatPdf = useCallback(async () => {
     if (pdfLoading) return
@@ -173,7 +187,9 @@ export default function ChatBot() {
         type="button"
         onClick={() => {
           setOpen(o => !o)
-          if (open) stopSpeech()
+          if (open) {
+            stopSpeech()
+          }
         }}
         className="fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-blue-600 text-white shadow-[var(--shadow-lift)] hover:bg-blue-700 flex items-center justify-center ring-2 ring-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-800"
         aria-label={open ? 'Close church chat' : 'Open church chat'}
@@ -207,8 +223,41 @@ export default function ChatBot() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-sm">{CHURCH_NAME_SHORT}</p>
-                <p className="text-xs text-blue-100 truncate">Warm help · sources from our site · PDFs · listen with Ara</p>
+                <p className="text-xs text-blue-100 truncate">
+                  {muted
+                    ? 'Voice off — tap speaker for sound · PDFs'
+                    : 'Replies read aloud · PDFs · tap speaker to mute'}
+                </p>
               </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setMuted(m => {
+                    const next = !m
+                    if (next) stopSpeech()
+                    return next
+                  })
+                }}
+                className="shrink-0 w-9 h-9 rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center ring-1 ring-white/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                aria-label={muted ? 'Unmute assistant voice' : 'Mute assistant voice'}
+                aria-pressed={muted}
+                title={muted ? 'Turn voice on' : 'Mute voice'}
+              >
+                {muted ? (
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 9l6 6m0-6l-6 6" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                  </svg>
+                )}
+              </button>
             </div>
 
             <div className="flex flex-wrap gap-2 border-b border-gray-100 bg-gray-50/90 px-3 py-2 shrink-0">
