@@ -45,9 +45,22 @@ In the Vercel dashboard: **Project → Settings → Environment Variables**, add
 | `NEXT_PUBLIC_SITE_URL` | Your production URL, e.g. `https://www.your-church.org` |
 | `XAI_API_KEY` | xAI console |
 | Optional chat/TTS/vector keys | See `.env.example` |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Optional; enables **shared** rate limits across Vercel function instances |
+| `SANITY_WEBHOOK_SECRET` | Secret you define; must match the webhook in Sanity Manage |
 | `DATABASE_URL` | Railway Postgres **when** you add server-side DB usage |
 
 Set each for **Production** (and Preview if you use preview deployments).
+
+### Sanity webhook (sermon vectors)
+
+When you use Upstash Vector + `OPENAI_API_KEY`, add a webhook in [Sanity Manage](https://www.sanity.io/manage) → your project → **API** → **Webhooks**:
+
+- **URL:** `https://<your-production-domain>/api/sanity/webhook`
+- **Dataset:** same as `NEXT_PUBLIC_SANITY_DATASET`
+- **Secret:** generate a long random string; set the same value as `SANITY_WEBHOOK_SECRET` on Vercel
+- **Filter:** restrict to sermon document types you index (for example `_type == "sermon"` if that matches your schema), or leave unfiltered only if you accept any document firing the handler
+
+The route verifies the payload with `@sanity/webhook` and re-indexes or deletes vectors for the affected sermon. Without `SANITY_WEBHOOK_SECRET`, the route rejects unsigned requests.
 
 Pull locally after saving (optional):
 

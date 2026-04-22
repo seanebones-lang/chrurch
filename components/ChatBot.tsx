@@ -18,24 +18,53 @@ function linkForPath(path: string): string {
   return base ? `${base}${p}` : p
 }
 
+const LS_MUTED = 'harvest_fbc_chat_muted'
+
+type PlayTtsOpts = { onPlaybackStarted?: () => void }
+
 export default function ChatBot() {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Good day — I am glad you are here. I am the gentle assistant for ${CHURCH_NAME_SHORT}, here to help with service times, visiting for the first time, ministries, sermons, events, giving, and finding anything on this website. I only answer questions about our church and this site. How may I help you today?`,
+      content: `I'm glad you're here. I can help with service times, visiting for the first time, ministries, sermons, events, giving, and finding anything on this site for ${CHURCH_NAME_SHORT}. I only answer questions about our church and this website—what would you like to know?`,
     },
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [pdfLoading, setPdfLoading] = useState(false)
   const [muted, setMuted] = useState(false)
+  const [voiceNeedsBrowserUnlock, setVoiceNeedsBrowserUnlock] = useState(false)
   const [ttsLoadingIndex, setTtsLoadingIndex] = useState<number | null>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const audioUrlRef = useRef<string | null>(null)
   const autoPlayedAssistantRef = useRef<Set<number>>(new Set())
+  const skipMutePersistRef = useRef(true)
   const reduceMotion = useReducedMotion()
+
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(LS_MUTED)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- restore preference once after mount
+      if (v === '1') setMuted(true)
+      if (v === '0') setMuted(false)
+    } catch {
+      /* ignore */
+    }
+  }, [])
+
+  useEffect(() => {
+    if (skipMutePersistRef.current) {
+      skipMutePersistRef.current = false
+      return
+    }
+    try {
+      localStorage.setItem(LS_MUTED, muted ? '1' : '0')
+    } catch {
+      /* ignore */
+    }
+  }, [muted])
 
   useEffect(() => {
     if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -67,7 +96,7 @@ export default function ChatBot() {
   }, [])
 
   const playTts = useCallback(
-    async (index: number, text: string) => {
+    async (index: number, text: string, opts?: PlayTtsOpts) => {
       stopSpeech()
       setTtsLoadingIndex(index)
       try {
@@ -96,8 +125,25 @@ export default function ChatBot() {
         audio.onerror = () => {
           stopSpeech()
         }
-        await audio.play()
-        setTtsLoadingIndex(null)
+        try {
+          await audio.play()
+          opts?.onPlaybackStarted?.()
+          setVoiceNeedsBrowserUnlock(false)
+          setTtsLoadingIndex(null)
+        } catch (e) {
+          const name = e && typeof e === 'object' && 'name' in e ? String((e as { name?: string }).name) : ''
+          if (name === 'NotAllowedError') {
+            setVoiceNeedsBrowserUnlock(true)
+            setTtsLoadingIndex(null)
+            if (audioUrlRef.current) {
+              URL.revokeObjectURL(audioUrlRef.current)
+              audioUrlRef.current = null
+            }
+            audioRef.current = null
+            return
+          }
+          stopSpeech()
+        }
       } catch {
         stopSpeech()
       }
@@ -107,15 +153,18 @@ export default function ChatBot() {
 
   /** Read each new assistant reply aloud by default (skip welcome at index 0). */
   useEffect(() => {
-    if (!open || muted || loading || reduceMotion) return
+    if (!open || muted || loading || reduceMotion || voiceNeedsBrowserUnlock) return
     const lastIdx = messages.length - 1
     if (lastIdx <= 0) return
     const last = messages[lastIdx]
     if (last.role !== 'assistant') return
     if (autoPlayedAssistantRef.current.has(lastIdx)) return
-    autoPlayedAssistantRef.current.add(lastIdx)
-    void playTts(lastIdx, last.content)
-  }, [messages, loading, muted, open, playTts, reduceMotion])
+    void playTts(lastIdx, last.content, {
+      onPlaybackStarted: () => {
+        autoPlayedAssistantRef.current.add(lastIdx)
+      },
+    })
+  }, [messages, loading, muted, open, playTts, reduceMotion, voiceNeedsBrowserUnlock])
 
   const downloadChatPdf = useCallback(async () => {
     if (pdfLoading) return
@@ -144,6 +193,7 @@ export default function ChatBot() {
     const text = input.trim()
     if (!text || loading) return
     stopSpeech()
+    setVoiceNeedsBrowserUnlock(false)
     setInput('')
     const updated: Message[] = [...messages, { role: 'user', content: text }]
     setMessages(updated)
@@ -216,6 +266,17 @@ export default function ChatBot() {
             exit={{ opacity: 0, y: reduceMotion ? 0 : 8, scale: reduceMotion ? 1 : 0.98 }}
             transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
             style={{ height: 420 }}
+            onPointerDown={() => {
+              if (!voiceNeedsBrowserUnlock || muted) return
+              setVoiceNeedsBrowserUnlock(false)
+              const lastIdx = messages.length - 1
+              const last = messages[lastIdx]
+              if (lastIdx > 0 && last?.role === 'assistant') {
+                void playTts(lastIdx, last.content, {
+                  onPlaybackStarted: () => autoPlayedAssistantRef.current.add(lastIdx),
+                })
+              }
+            }}
           >
             <div className="bg-gradient-to-r from-blue-700 to-blue-600 text-white px-4 py-3 flex items-center gap-2 shrink-0">
               <div className="w-8 h-8 rounded-full bg-amber-400 flex items-center justify-center text-blue-900 font-bold text-sm">
@@ -279,6 +340,13 @@ export default function ChatBot() {
                 {pdfLoading ? 'Preparing chat PDF…' : 'Download chat PDF'}
               </button>
             </div>
+
+            {voiceNeedsBrowserUnlock && !muted && (
+              <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-3 py-2 text-center text-[11px] text-amber-950">
+                <strong className="font-semibold">Voice blocked by your browser.</strong> Tap anywhere in this panel to
+                play the reply, or use Listen on a message.
+              </div>
+            )}
 
             <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3 space-y-3">
               {messages.map((m, i) => (

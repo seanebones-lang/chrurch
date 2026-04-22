@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildChatTranscriptPdf } from '@/lib/pdf-church'
-import { clientKeyFromRequest, parsePositiveInt, rateLimitOr429 } from '@/lib/rate-limit'
+import { rateLimitOr429Async, pdfLimit } from '@/lib/rate-limit-distributed'
 
 const WINDOW_MS = 60_000
-const PDF_LIMIT = () => parsePositiveInt(process.env.CHAT_PDF_RATE_LIMIT_PER_MINUTE, 25)
 const MAX_TURNS = 40
 const MAX_CONTENT = 4000
 
@@ -24,8 +23,7 @@ function sanitizeTurns(raw: unknown): Turn[] | null {
 }
 
 export async function POST(req: NextRequest) {
-  const ip = clientKeyFromRequest(req)
-  const rl = rateLimitOr429(`pdf_transcript:${ip}`, PDF_LIMIT(), WINDOW_MS)
+  const rl = await rateLimitOr429Async('pdfPost', req, pdfLimit(), WINDOW_MS)
   if (!rl.ok) {
     return NextResponse.json(
       { error: 'Too many PDF requests' },

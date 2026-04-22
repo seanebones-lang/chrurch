@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { CHURCH_PHONE_DISPLAY, CHURCH_PHONE_TEL } from '@/lib/church-info'
 
 interface Props {
   title?: string
@@ -10,6 +11,7 @@ interface Props {
 
 export default function ContactForm({ title = 'Get in Touch', subtitle, formId }: Props) {
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
 
   const endpoint = formId ? `https://formspree.io/f/${formId}` : '/api/contact'
@@ -20,18 +22,30 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setStatus('sending')
+    setErrorMessage(null)
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(form),
       })
-      if (res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { success?: boolean; error?: string; code?: string }
+
+      if (res.ok && data.success !== false) {
         setStatus('sent')
         setForm({ name: '', email: '', phone: '', message: '' })
-      } else setStatus('error')
+        return
+      }
+
+      setStatus('error')
+      setErrorMessage(
+        typeof data.error === 'string' && data.error.trim()
+          ? data.error.trim()
+          : 'Something went wrong. Please try again or call us directly.',
+      )
     } catch {
       setStatus('error')
+      setErrorMessage('Something went wrong. Please try again or call us directly.')
     }
   }
 
@@ -110,8 +124,17 @@ export default function ContactForm({ title = 'Get in Touch', subtitle, formId }
           />
         </div>
 
-        {status === 'error' && (
-          <p className="text-red-600 text-sm">Something went wrong. Please try again or call us directly.</p>
+        {status === 'error' && errorMessage && (
+          <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 space-y-2">
+            <p>{errorMessage}</p>
+            <p>
+              You can also call{' '}
+              <a href={`tel:${CHURCH_PHONE_TEL}`} className="font-semibold underline">
+                {CHURCH_PHONE_DISPLAY}
+              </a>
+              .
+            </p>
+          </div>
         )}
 
         <button

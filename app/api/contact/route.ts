@@ -6,26 +6,37 @@ export async function POST(req: NextRequest) {
     const { name, email, phone, message } = body
 
     if (!name || !email || !message) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 })
     }
 
-    // If Formspree form ID is set, forward to it
-    const formId = process.env.FORMSPREE_FORM_ID
-    if (formId) {
-      const res = await fetch(`https://formspree.io/f/${formId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ name, email, phone, message }),
-      })
-      if (!res.ok) throw new Error('Formspree error')
-      return NextResponse.json({ success: true })
+    const formId = process.env.FORMSPREE_FORM_ID?.trim()
+    if (!formId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'The contact form is not fully configured on the server yet. Please call the church or try again later.',
+          code: 'CONTACT_NOT_CONFIGURED',
+        },
+        { status: 503 },
+      )
     }
 
-    // Fallback: log to console (replace with your preferred email provider)
-    console.log('Contact form submission:', { name, email, phone, message })
-
+    const res = await fetch(`https://formspree.io/f/${formId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ name, email, phone, message }),
+    })
+    if (!res.ok) {
+      const t = await res.text().catch(() => '')
+      console.error('[contact] Formspree error', res.status, t.slice(0, 400))
+      return NextResponse.json(
+        { success: false, error: 'Could not deliver your message. Please try again or call us.' },
+        { status: 502 },
+      )
+    }
     return NextResponse.json({ success: true })
   } catch {
-    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 })
+    return NextResponse.json({ success: false, error: 'Failed to send message' }, { status: 500 })
   }
 }

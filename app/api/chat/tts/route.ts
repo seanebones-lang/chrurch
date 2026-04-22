@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { plainTextForTts } from '@/lib/tts-plain-text'
-import { clientKeyFromRequest, parsePositiveInt, rateLimitOr429 } from '@/lib/rate-limit'
+import { rateLimitOr429Async, ttsLimit } from '@/lib/rate-limit-distributed'
 
 const MAX_IN = 12000
 const WINDOW_MS = 60_000
-const TTS_LIMIT = () => parsePositiveInt(process.env.CHAT_TTS_RATE_LIMIT_PER_MINUTE, 30)
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = clientKeyFromRequest(req)
-    const rl = rateLimitOr429(`tts:${ip}`, TTS_LIMIT(), WINDOW_MS)
+    const rl = await rateLimitOr429Async('tts', req, ttsLimit(), WINDOW_MS)
     if (!rl.ok) {
       return NextResponse.json(
         { error: 'Too many voice requests. Please wait a moment.' },

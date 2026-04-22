@@ -82,10 +82,21 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 mt-10 pt-6 border-t border-gray-800/80 flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-gray-500">
+      <div className="max-w-6xl mx-auto px-4 mt-10 pt-6 border-t border-gray-800/80 flex flex-col md:flex-row md:flex-wrap items-center justify-center md:justify-between gap-3 text-sm text-gray-500 text-center md:text-left">
         <p>{CHURCH_SERVICE_TIMES_SUMMARY}</p>
         <p>
           © {new Date().getFullYear()} {CHURCH_NAME}. All rights reserved.
+        </p>
+        <p>
+          Built by{' '}
+          <a
+            href="https://mothership-ai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-400/90 hover:text-amber-300 underline underline-offset-2 decoration-amber-500/50 hover:decoration-amber-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400/80 rounded-sm"
+          >
+            NextEleven LLC
+          </a>
         </p>
       </div>
     </footer>

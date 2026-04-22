@@ -4,7 +4,7 @@ import { formatLiveSiteFactsBlock } from '@/lib/church-live-facts'
 import { buildRetrievalContext } from '@/lib/chat-retrieval'
 import { getSettings } from '@/lib/sanity.queries'
 import { CHURCH_PHONE_DISPLAY } from '@/lib/church-info'
-import { clientKeyFromRequest, parsePositiveInt, rateLimitOr429 } from '@/lib/rate-limit'
+import { rateLimitOr429Async, chatLimit } from '@/lib/rate-limit-distributed'
 import type { ChatSource } from '@/lib/chat-types'
 
 const MAX_MESSAGE_CHARS = 2000
@@ -12,7 +12,6 @@ const MAX_HISTORY = 12
 const MAX_SYSTEM_CHARS = 95000
 
 const WINDOW_MS = 60_000
-const CHAT_LIMIT = () => parsePositiveInt(process.env.CHAT_RATE_LIMIT_PER_MINUTE, 45)
 
 type ChatTurn = { role: 'user' | 'assistant' | 'system'; content: string }
 
@@ -40,8 +39,7 @@ function lastUserContent(turns: ChatTurn[]): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const ip = clientKeyFromRequest(req)
-    const rl = rateLimitOr429(`chat:${ip}`, CHAT_LIMIT(), WINDOW_MS)
+    const rl = await rateLimitOr429Async('chat', req, chatLimit(), WINDOW_MS)
     if (!rl.ok) {
       return NextResponse.json(
         { message: 'Too many messages right now. Please wait a minute and try again.', sources: [] as ChatSource[] },

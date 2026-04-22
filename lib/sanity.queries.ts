@@ -86,6 +86,12 @@ export const SERMONS_FOR_INGEST_QUERY = groq`
   }
 `
 
+export const SERMON_INGEST_BY_ID_QUERY = groq`
+  *[_id == $id && _type == "sermon" && defined(slug.current)][0] {
+    _id, title, "slug": slug.current, date, speaker, series, scripture, description, transcript
+  }
+`
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 export async function getSermons() {
@@ -126,4 +132,8 @@ export async function getChatPagesSearch(pat: string) {
 
 export async function getSermonsForIngest() {
   return client.fetch(SERMONS_FOR_INGEST_QUERY)
+}
+
+export async function getSermonIngestRowById(id: string) {
+  return client.fetch(SERMON_INGEST_BY_ID_QUERY, { id })
 }
